@@ -149,7 +149,7 @@
     <p>Now they have the semblance of <strong>rules</strong>. Later, we will speak interchangeably of branches and of rules. For our purposes, they are the same thing.</p>
     <h2>Branches generate sentences</h2>
     <div class="dash">&mdash;</div>
-    <p>Having broken down a tree to its branches, we can reassemble it once again! What is important here that we need not get what we had in the beginning. This is especially true if we allow ourselves to pick several copies of identical branches.</p>
+    <p>Having broken down a tree to its branches, we can reassemble it once again! What is important here that we need not get the same tree we had in the beginning. This is especially true if we allow ourselves to pick several copies of identical branches.</p>
     <p>Recall that we had this kind of branch/rule:</p>
     <p id="branch"></p>
     <script>
@@ -180,13 +180,13 @@
          }
      }
     </script>
-    <p>What we then have, is a limited repertory of branches/rules. For this reason, equally limited is the variety of trees that we can construct using them, as is the variety of sentences that we can construct them for.</p>
+    <p>What we then have, is a limited repertory of branches/rules. For this reason, the variety of trees that we can construct using them is limited in the same way, as is the variety of sentences that we can construct them for.</p>
 
     <p>Whenever we can construct a tree for a sentence, we will say that our set of branches/rules <strong>generates</strong> that sentence.</p>
 
     <p>We can imagine different sorts of branch/rule repertories: at one point, we might possess one set of branches/rules, but on a different occasion we might also have another set at our disposal. In such cases, what will also vary is the set of sentences that can be generated.</p>
 
-    <p>Naturally, this can come in very handy in natural language syntax. One of its goals is, after all, separating &ldquo;good&rdquo; branches/rules from the &ldquo;bad&rdquo; ones. By &ldquo;good&rdquo; mean those that generate only those sentences, that are possible in a particular language variety. Impossible sentences (such as *<em>Wugs in indulged</em>) would never come out.</p>
+    <p>Naturally, this can come in very handy in natural language syntax. One of its goals is, after all, separating &ldquo;good&rdquo; branches/rules from the &ldquo;bad&rdquo; ones. By &ldquo;good&rdquo; mean those that generate only those sentences that are possible in a particular language variety. Impossible sentences (such as *<em>Wugs in indulged</em>) would never come out.</p>
 
     <h2>A grammar of conversation</h2>
     <p class="dash">&mdash;</p>
@@ -275,7 +275,7 @@
      );
      tree.draw();
     </script>
-    <p>If we say that our intent was to predict, what kind of conversation is realistic, and what other kind is not, we will have to concede that our predictive model has made a mistake. We have obtained a false positive: we generated something that we would have liked to avoid generating.</p>
+    <p>If we say that our intent was to predict what kind of conversation is realistic, and what other kind is not, we will have to concede that our predictive model has made a mistake. We have obtained a false positive: we generated something that we would have liked to avoid generating.</p>
     <p>Of course, a model of polite conversation does not have much to do with programming, but all of this shows that phrase structure rules are capable of capturing something dynamic, something that evolves in time.</p>
     <p>By the way, these rules that correspond to the branches of a syntax tree are termed <em>phrase structure</em> rules.</p>
     <h2>Commands, concrete and abstract</h2>
@@ -317,7 +317,7 @@
         </tr>
     </table>
 
-    <p>It is not unlikely that you are thinking to yourself, &ldquo;But where do all of these commands come from? <em>Write</em>, <em>backspace</em>, &hellip; Are they made up? Is it not knowing the actual repertory of them, that makes a good programmer?&rdquo;</p>
+    <p>It is not unlikely that you are thinking to yourself, &ldquo;But where do all of these commands come from? <em>Write</em>, <em>backspace</em>, &hellip; Are they made up? Is it not knowing the actual repertory of them that makes a good programmer?&rdquo;</p>
 
     <p>We can reassure you that it is not! While we agree that it is part of the mastery of programming, it not a major part. And practice fills in most gaps in it.</p>
 
@@ -347,7 +347,7 @@
     </table>
 
     <p>Such a trace would likely come from a program that makes it bump off of obstacles, while moving in the space that surrounds it, in straight lines.</p>
-    <p>So that is the program that we created yesterday; let us also assume that we uploaded it to the web. But this was yesterday&nbsp;&ndash; today&apos;s programmers can use our program as if it were a fully atomic command, just like <em>forward</em>! Even programming languages often help us to this end: we need not copy and paste our yesterday&apos;s program; we can <strong>import</strong> it instead.</p>
+    <p>So that is the program that we created yesterday; let us also assume that we uploaded it to the web. But this was yesterday&nbsp;&ndash; today&rsquo;s programmers can use our program as if it were a fully atomic command, just like <em>forward</em>! Perhaps it is named <em>bump off of obstacles</em>. Even programming languages often help us to this end: we need not copy and paste our yesterday&rsquo;s program; we can <strong>import</strong> it instead.</p>
     <p>Computer scientists have adopted the term <strong>abstraction</strong> for this phenomenon. Indeed, our fellow programmers, for whom our program will be a mere command, will be able to program as succinctly as we did, yet obtain something larger in scale. Our contribution will be abstracted away from.</p>    
     
     <h2>A grammar of behavior</h2>
@@ -407,7 +407,7 @@
     <p class="dash">&mdash;</p>
 
 
-    <p>In our demonstration, we can use the following commands to construct a program like the one above. Note that in our program, we have also defined two commands ourselves! These were <em>ask how the user feels</em> and <em>continue conversation</em>.</p>
+    <p>In our demonstration, we can use the following commands to construct a program like the one above. Note that in our program, we had also defined two commands ourselves! These were <em>ask how the user feels</em> and <em>continue conversation</em>.</p>
     <ul>
         <li>write <span class="nonterminal">something</span>,</li>
         <li>space,</li>
@@ -428,10 +428,10 @@
     </ul>
 
     <p>An important point on how we treat execution traces in this article:</p>
-    <p class="framed">Once a question command is run, either the word <em class="yes">yes</em> or <em class="no">no</em> follows it immediately in the trace.</p>
+    <p class="framed">Once a question command is run, the word <em class="yes">yes</em> or <em class="no">no</em> follows it immediately in the trace.</p>
 
 
-    <p><em class="yes">Yes</em> and <em class="no">no</em> are part of the trace, but in general, the program doesn not cause either of them to occur in any predictable manner. To put it metaphorically, a question command is a question posed by the program to the environment, and <em class="yes">yes</em> or <em class="no">no</em> is the response.</p>
+    <p><em class="yes">Yes</em> and <em class="no">no</em> are part of the trace, but in general, the program does not cause either of them to occur in any predictable manner. To put it metaphorically, a question command is a question posed by the program to the environment, and <em class="yes">yes</em> or <em class="no">no</em> is the response.</p>
 
     <h2>How does this program run?</h2>
     <p class="dash">&mdash;</p>
@@ -527,7 +527,7 @@
         <li>(O) = <em>write Oh, perfect! We hope it only gets better!</em></li>
     </ul>
 
-    <p>Meet <strong>recursion</strong>. We define <em>ask how the user feels</em> to include <em>continue conversation</em>, but also provide an option for <em>continue conversation</em> to include <em>ask how the user feels</em>. As a result, the commands that <em>ask how the user feels</em> expands to will potentially include <em>ask how the user feels</em> itself! This way, we obtain a cyclic process.</p>
+    <p>Meet <strong>recursion</strong>. We define <em>ask how the user feels</em> to include <em>continue conversation</em>, but also provide an option for <em>continue conversation</em> to include <em>ask how the user feels</em>. As a result, the commands that <em>ask how the user feels</em> expands to will potentially include <em>ask how the user feels</em> itself! This way, we obtain a cyclical process.</p>
 
 
     <p>We can make the trace as lengthy as we wish:</p>
@@ -631,7 +631,7 @@
 
     <p>Also, for the ones who are interested:</p>
     <ul>
-        <li><em>Parentheses.</em> In Python, commands (i.e., functions) can have <em>arguments</em>. This is, partly, the same concept of argument as the one we use in linguistics. In fact, commands/functions are often named using verbs!<br>
+        <li><em>Parentheses.</em> In Python, commands (i.e., functions) can have <em>arguments</em>. This is similar to the concept of argument that we use in linguistics, when discussing verbs. In fact, commands/functions are often named using verbs!<br>
         Recall the command <em>write <span class="nonterminal">something</span></em>. The encircled part (<em class="nonterminal">something</em>) is the argument&nbsp;&ndash; both in a linguistic and in a programming sense. In the language that we employed in this article, we would have said <code>write Hello world</code>, and in Pythom, we will say <code>print("Hello world")</code>.<br>
         Therefore, the parentheses are here to contain the arguments of a function. To slightly simplify the actual state of affairs, even in the absence of arguments, the parentheses are still required for consistency.</li>
     </ul>
