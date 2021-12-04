@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://katego.lt/metaphor-en/style.css?2021-11-24">
+    <script src="https://katego.lt/metaphor-en/svg-tree-drawer.js" charset="utf-8"></script>
+    <title>A metaphor connecting programming and phrase structure syntax</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <p class="asterisk">*</p>
+    <h1><span>A metaphor connecting</span><br>programming and phrase structure syntax</h1>
+    <p class="dash">&mdash;</p>
+    <p>If you ever took a linguistics class, you very likely drew some syntax trees, more or less like this one:</p>
+    <p id="first-tree"></p>
+    <script>
+     var tree = new TreeDrawer(
+         document.getElementById('first-tree'),
+         {label:"S", extended: true, children: [
+             {label:"NP", children:[
+                 {label:"N", children: [
+                     {label:"Wugs"}
+                 ]},
+             ]},
+             {label:"VP", children: [
+                 
+                 {label:"V", children: [
+                     {label:"indulged"},
+                 ]},
+                 {label: "AdvP", children: [
+                    {label: "Adv", children: [
+                        {label: "heavily"}
+                    ]}
+                 ]},
+                 {label:"PP", children: [
+                     {label: "P", children: [
+                        {label: "in"}
+                     ]},
+                     {label: "NP", children: [
+                        {label: "NP", children: [
+                            {label: "N", children: [
+                                {label: "holiday"}
+                            ]}
+                        ]},
+                        {label: "N", children: [
+                            {label: "treats"}
+                        ]}
+                     ]}
+                 ]},
+             ]}
+         ]}
+     );
+     tree.draw();
+    </script>
+    
+    <p>Now we will show how these very same trees can help explain computer programming.</p>
+    <p>Specifically, we will concern ourselves with what the latter field calls <em>control flow</em>. In many commonly-used programming languages, it is expressed using <code>if</code>, <code>if-else</code>, <code>while</code>, and related constructions.</p>
+    
+    <h2>Hacking at trees</h2>
+    <p class="dash">&mdash;</p>
+    <p>Recall that syntax trees can be easily broken down to branches. Listed below are some of the branches of the preceding tree:</p>
+    <p class="branches">
+        <p id="branch-s-np-vp"></p>
+        <p id="branch-np-n"></p>
+        <p id="branch-advp-adv"></p>
+        <p id="branch-pp-p-np"></p>
+        <p class="ellipsis">&hellip;</p>
+        <p id="terminal-n"></p>
+    </p>
+    <script>
+        var trees = [
+            new TreeDrawer(
+                document.getElementById('branch-s-np-vp'),
+                {
+                    label:"S", children: [
+                        {
+                            label:"NP", 
+                            children: []
+                        },
+                        {
+                            label:"VP", 
+                            children: []
+                        }
+                    ]
+                }
+            ),
+            new TreeDrawer(
+                document.getElementById('branch-np-n'),
+                {
+                    label:"NP", children: [
+                        {
+                            label:"N",
+                            children: []
+                        }
+                    ]
+                }
+            ),
+            new TreeDrawer(
+                document.getElementById('branch-advp-adv'),
+                {
+                    label:"AdvP", children: [
+                        {
+                            label:"Adv", 
+                            children: []
+                        }
+                    ]
+                }
+            ),
+
+            new TreeDrawer(
+                document.getElementById('branch-pp-p-np'),
+                {
+                    label:"PP", children: [
+                        {
+                            label:"P", 
+                            children: []
+                        },
+                        {
+                            label:"NP",
+                            children: []
+                        }
+                    ]
+                }
+            ),
+            new TreeDrawer(
+                document.getElementById('terminal-n'),
+                {
+                    label:"N", children: [
+                        {
+                            label:"treats"
+                        }
+                    ]
+                }
+            )
+        ];
+        for (var tree of trees) {
+            tree.draw();
+        }
+    </script>
+    <p>We can also notate them as follows:</p>
+    <p class="framed">
+        S &rarr; NP + VP<br>
+        NP &rarr; N<br>
+        AdvP &rarr; Adv<br>
+        PP &rarr; P + NP<br>
+        &vellip;<br>
+        N &rarr; treats
+    </p>
+    <p>Now they have the semblance of <strong>rules</strong>. Later, we will speak interchangeably of branches and of rules. For our purposes, they are the same thing.</p>
+    <h2>Branches generate sentences</h2>
+    <div class="dash">&mdash;</div>
+    <p>Having broken down a tree to its branches, we can reassemble it once again! What is important here that we need not get what we had in the beginning. This is especially true if we allow ourselves to pick several copies of identical branches.</p>
+    <p>Recall that we had this kind of branch/rule:</p>
+    <p id="branch"></p>
+    <script>
+     var tree = new TreeDrawer(
+         document.getElementById('branch'),
+         {label:"PP", extended: true, children: [
+             {label:"P"},
+             {label:"NP"}
+         ]}
+     );
+     tree.draw();
+    </script>
+    <p>&hellip;but we <span class="no">did not have</span> this one:</p>
+    <p id="branch-illicit"></p>
+    <script>
+     var tree = new TreeDrawer(
+         document.getElementById('branch-illicit'),
+         {label:"PP", extended: true, children: [
+             {label:"NP"},
+             {label:"NP"}
+         ]}
+     );
+     tree.draw();
+     for (const node of document.querySelectorAll('#branch-illicit .leaf *')) {
+         if (node.innerHTML === 'NP') {
+             node.style.fontWeight = 'bold';
+             break;
+         }
+     }
+    </script>
+    <p>What we then have, is a limited repertory of branches/rules. For this reason, equally limited is the variety of trees that we can construct using them, as is the variety of sentences that we can construct them for.</p>
+
+    <p>Whenever we can construct a tree for a sentence, we will say that our set of branches/rules <strong>generates</strong> that sentence.</p>
+
+    <p>We can imagine different sorts of branch/rule repertories: at one point, we might possess one set of branches/rules, but on a different occasion we might also have another set at our disposal. In such cases, what will also vary is the set of sentences that can be generated.</p>
+
+    <p>Naturally, this can come in very handy in natural language syntax. One of its goals is, after all, separating &ldquo;good&rdquo; branches/rules from the &ldquo;bad&rdquo; ones. By &ldquo;good&rdquo; mean those that generate only those sentences, that are possible in a particular language variety. Impossible sentences (such as *<em>Wugs in indulged</em>) would never come out.</p>
+
+    <h2>A grammar of conversation</h2>
+    <p class="dash">&mdash;</p>
+    <p>As we see now, adopting some branches/rules and discarding the rest creates an <strong>opposition</strong> of sentence versus word salad.</p>
+    <p>We might suspect that such a classifying device for word sequences might be useful in other places than syntax, too. Let us look at the following example, where conversations are generated:</p>
+    <p class="framed">
+        conversation &rarr; greeting + exchange<br>
+        greeting &rarr; &ldquo;Good morning!&rdquo;<br>
+        greeting &rarr; &ldquo;Hi!&rdquo;<br>
+        exchange &rarr; question + follow-up<br>
+        question &rarr; &ldquo;How are you?&rdquo;<br>
+        follow-up &rarr; &ldquo;Fine, thanks.&rdquo; + reciprocation<br>
+        follow-up &rarr; &ldquo;Fine, thanks.&rdquo; + excuse<br>
+        follow-up &rarr; &ldquo;Not so good, to be honest.&rdquo; + commiseration<br>
+        commiseration &rarr; &ldquo;Oh my, what happened? [...]&rdquo;<br>
+        reciprocation &rarr; &ldquo;And you?&rdquo; + follow-up<br>
+        excuse &rarr; &ldquo;Sorry, I am running late!&rdquo;<br>
+    </p>
+    <p>The following is a possible tree. A valid conversation, if somewhat soulless:</p>
+    <p id="good-conversation"></p>
+    <script>
+     var tree = new TreeDrawer(
+         document.getElementById('good-conversation'),
+         {label:"conversation", extended: true, children: [
+             {label:"greeting", children: [
+                {label: "Good morning!"}
+             ]},
+             {label:"exchange", children: [
+                {label:"question", children: [
+                    {label:"How are you?"},
+                ]},
+                {label:"follow-up", children: [
+                    {label:"Fine, thanks."},
+                    {label:"reciprocation", children: [
+                        {label: "And you?"},
+                        {label: "follow-up", children: [
+                            {label: "Fine, thanks."},
+                            {label: "apology", children: [
+                                {label: "Sorry, I am running late!"}
+                            ]},
+                        ]}
+                    ]},
+                ]},
+             ]},
+         ]}
+     );
+     tree.draw();
+    </script>
+    <p>On the other hand, the following verbal exchange is truly chaotic. Through our careful choice of branches/rules, we have <span class="no">prevented</span> it from being generated:</p>
+    <p id="word-salad" class="framed">
+        <em>Not so good, to be honest.&nbsp;&nbsp;&nbsp;Hi!&nbsp;&nbsp;&nbsp;And you?&nbsp;&nbsp;&nbsp;Good morning!</em>
+    </p>
+    <p>Obviously, conversational dynamics is a complicated matter. It is not something where we could just carry over a model from syntax and expect to be done. Our rules can generate the following sequence, but as a conversation, it is not very coherent (assuming that only two people are conversing):</p>
+    <p id="bad-conversation"></p>
+    <script>
+     var tree = new TreeDrawer(
+         document.getElementById('bad-conversation'),
+         {label:"conversation", extended: true, children: [
+             {label:"greeting", children: [
+                {label: "Hi!"}
+             ]},
+             {label:"exchange", children: [
+                {label:"question", children: [
+                    {label:"How are you?"},
+                ]},
+                {label:"follow-up", children: [
+                    {label:"Fine, thanks."},
+                    {label:"reciprocation", children: [
+                        {label: "And you?"},
+                        {label: "follow-up", children: [
+                            {label: "Fine, thanks."},
+                            {label:"reciprocation", children: [
+                                {label: "And you?"},
+                                {label: "follow-up", children: [
+                                    {label: "Not so good, to be honest."},
+                                    {label: "commiseration", children: [
+                                        {label: "Oh my, what happened? [...]"}
+                                    ]},
+                                ]}
+                            ]},
+                        ]}
+                    ]},
+                ]},
+             ]},
+         ]}
+     );
+     tree.draw();
+    </script>
+    <p>If we say that our intent was to predict, what kind of conversation is realistic, and what other kind is not, we will have to concede that our predictive model has made a mistake. We have obtained a false positive: we generated something that we would have liked to avoid generating.</p>
+    <p>Of course, a model of polite conversation does not have much to do with programming, but all of this shows that phrase structure rules are capable of capturing something dynamic, something that evolves in time.</p>
+    <p>By the way, these rules that correspond to the branches of a syntax tree are termed <em>phrase structure</em> rules.</p>
+    <h2>Commands, concrete and abstract</h2>
+    <p class="dash">&mdash;</p>
+
+    <p>Instead of engaging in this analysis of these courteous rituals, let us try and model an <strong>execution trace</strong> of a simple program. It is popular to assume that a program is a sequence of instructions. Let us clarify:</p>
+    <ul>
+       <li>an execution trace is a sequence of instructions,</li>
+       <li>a program is something that generates some execution traces, but not others.</li>
+    </ul>
+    <p>What follows below could be a list of commands in the order that a program executes them in, if its goal is to spell WHIRLWIND. In other words, this is its execution trace.</p>
+    <table class="framed trace">
+        <tr>
+            <td>write W</td>
+            <td>write H</td>
+            <td>write I</td>
+            <td>write R</td>
+            <td>write L</td>
+            <td>write W</td>
+            <td>write I</td>
+            <td>write N</td>
+            <td>write D</td>
+        </tr>
+    </table>
+    <p>The same effect would be achieved by a slightly longer trace, in which one makes a typo and fixes it right away:</p>
+    <table class="framed trace">
+        <tr>
+            <td>write W</td>
+            <td><strong>write I</strong></td>
+            <td><strong>backspace</strong></td>
+            <td>write H</td>
+            <td>write I</td>
+            <td>write R</td>
+            <td>write L</td>
+            <td>write W</td>
+            <td>write I</td>
+            <td>write N</td>
+            <td>write D</td>
+        </tr>
+    </table>
+
+    <p>It is not unlikely that you are thinking to yourself, &ldquo;But where do all of these commands come from? <em>Write</em>, <em>backspace</em>, &hellip; Are they made up? Is it not knowing the actual repertory of them, that makes a good programmer?&rdquo;</p>
+
+    <p>We can reassure you that it is not! While we agree that it is part of the mastery of programming, it not a major part. And practice fills in most gaps in it.</p>
+
+    <p>Importantly, any command (e.g., <em>backspace</em>) that might have not even existed yesterday, can exist today! We have this kind of dynamic situation thanks to the internet.</p>
+
+    <p>To delve somewhat deeper into this, consider an example. Assume that yesterday we had been writing some code for a robot. Yesterday, its programming language had the commands <em>forward</em> and <em>turn</em>, and also a question command <em>obstacle?</em>, which is automatically followed by <em class="yes">yes</em> or <em class="no">no</em>.</p>
+
+    <p>On one occasion, our robot behaved as follows, as given by this execution trace:</p>
+
+    <table class="framed trace">
+        <tr>
+            <td>obstacle?</td>
+            <td class="no">no</td>
+            <td>forward</td>
+            <td>obstacle?</td>
+            <td class="no">no</td>
+            <td>forward</td>
+            <td>obstacle?</td>
+            <td class="yes">yes</td>
+            <td><strong>turn</strong></td>
+            <td>obstacle?</td>
+            <td class="no">no</td>
+            <td>forward</td>
+            <td>obstacle?</td>
+            <td>&hellip;</td>
+        </tr>
+    </table>
+
+    <p>Such a trace would likely come from a program that makes it bump off of obstacles, while moving in the space that surrounds it, in straight lines.</p>
+    <p>So that is the program that we created yesterday; let us also assume that we uploaded it to the web. But this was yesterday&nbsp;&ndash; today&apos;s programmers can use our program as if it were a fully atomic command, just like <em>forward</em>! Even programming languages often help us to this end: we need not copy and paste our yesterday&apos;s program; we can <strong>import</strong> it instead.</p>
+    <p>Computer scientists have adopted the term <strong>abstraction</strong> for this phenomenon. Indeed, our fellow programmers, for whom our program will be a mere command, will be able to program as succinctly as we did, yet obtain something larger in scale. Our contribution will be abstracted away from.</p>    
+    
+    <h2>A grammar of behavior</h2>
+
+    
+    <p class="dash">&mdash;</p>
+
+    <p>To program, therefore, is <strong>to combine smaller behaviors into larger ones</strong>, “smaller” being the key word here, as opposed to just “small”.</p>
+    <p>Let us not stray too far from phrase structure, though.</p>
+    <p>A program is <strong>a set of rules that singles out some execution traces</strong> as possible products of its execution, leaving aside the ones that are impossible.</p>
+    <p>Now this does not seem all too different from contrasting grammatical sentences with ungrammatical strings, and also from separating coherent courteous rituals from nonsensical ones!</p>
+    <table class="framed">
+        <tr>
+            <td class="yes" style="text-align: right;">grammatical sentences</td>
+            <td style="padding-left: 10px; padding-right: 10px;">&larr;</td>
+            <td>set of phrase structure rules</td>
+            <td style="padding-left: 10px; padding-right: 10px;">&rarr;</td>
+            <td class="no" style="text-align: left;">ungrammatical strings of words</td></tr>
+        </tr>
+        <tr>
+            <td colspan="5" style="padding: 10px;">=</td>
+        </tr>
+        <tr>
+            <td class="yes" style="text-align: right;">coherent conversations from given phrases</td>
+            <td style="padding-left: 10px; padding-right: 10px;">&larr;</td>
+            <td>set of conversational structure rules</td>
+            <td style="padding-left: 10px; padding-right: 10px;">&rarr;</td>
+            <td class="no" style="text-align: left;">incoherent conversations</td></tr>
+        </tr>
+        <tr>
+            <td colspan="5" style="padding: 10px;">=</td>
+        </tr>
+        <tr>
+            <td class="yes" style="text-align: right;">possible execution traces</td>
+            <td style="padding-left: 10px; padding-right: 10px;">&larr;</td>
+            <td>program</td>
+            <td style="padding-left: 10px; padding-right: 10px;">&rarr;</td>
+            <td class="no" style="text-align: left;">other, unrelated strings of commands</td></tr>
+        </tr>
+    </table>
+    <p>It is not often that a single string of instructions make a meaningful program, because it must eact to an unpredictable environment. One does not need robots for that: in a simple desktop application, too, the user can click on one button, but they can also click on another.</p>
+    <p>Because of this, a program often has more than one corresponding string of instructions (execution traces). The program’s code embodies all of them. In a sense, it <em>generates</em> these strings of instructions.</p>
+    <p class="dash">&mdash;</p>
+
+    <h2>Demonstration</h2>
+    <p class="dash">&mdash;</p>
+    <p>We now find ourselves in a simple text editor (imagine Microsoft Word</em> &reg;, just a lot more simplistic), that can be controlled programmatically:</p>
+
+    <iframe src="https://katego.lt/metaphor-en/ide.php/18cd11e5a4004bc5cbc9768a8ee991d5" width="900" height="300" frameborder="0"></iframe>
+
+    <p>Try this program out: in the <em>Text</em> window, type any response, and after that, press <em>Enter</em>. Afterwards, we suggest looking for specific parts in its code that are responsible for the phrases that it outputs. This program will be discussed later as well.</p>
+
+    <p class="dash">&mdash;</p>
+
+
+    <h2>Commands for a good start</h2>
+    <p class="dash">&mdash;</p>
+
+
+    <p>In our demonstration, we can use the following commands to construct a program like the one above. Note that in our program, we have also defined two commands ourselves! These were <em>ask how the user feels</em> and <em>continue conversation</em>.</p>
+    <ul>
+        <li>write <span class="nonterminal">something</span>,</li>
+        <li>space,</li>
+        <li>read<br>(pauses the program and lets the user enter some text; execution is resumed as soon as <em>Enter</em> is pressed;<br>once the input has been received, it becomes selected: see below),</li>
+        <li>forward, back<br>(moves the cursor by one character),</li>
+        <!-- <li>to next line, to previous line,</li> -->
+        <li>select, unselect<br>(turns selection mode on and off respectively;<br>in this mode cursor movement doubles as including characters in a selection),</li>
+        <!-- <li>delete<br>(the text that is selected),</li>
+        <li>delete <span class="nonterminal">something</span>.</li>. -->
+    </ul>
+    <p>There are some question commands too; for now, we have made use of the following one:</p>
+    <ul>
+        <li>selection equals <span class="nonterminal">something</span>?</li>
+        <!-- <li><span class="nonterminal">number</span> characters selected?,</li>
+        <li>selection contains <span class="nonterminal">something</span>?,</li>
+        <li>selection begins with <span class="nonterminal">something</span>?,</li>
+        <li>selection ends with <span class="nonterminal">something</span>?</li> -->
+    </ul>
+
+    <p>An important point on how we treat execution traces in this article:</p>
+    <p class="framed">Once a question command is run, either the word <em class="yes">yes</em> or <em class="no">no</em> follows it immediately in the trace.</p>
+
+
+    <p><em class="yes">Yes</em> and <em class="no">no</em> are part of the trace, but in general, the program doesn not cause either of them to occur in any predictable manner. To put it metaphorically, a question command is a question posed by the program to the environment, and <em class="yes">yes</em> or <em class="no">no</em> is the response.</p>
+
+    <h2>How does this program run?</h2>
+    <p class="dash">&mdash;</p>
+
+    <p>Here is the same program, again:</p>
+
+    <iframe src="https://katego.lt/metaphor-en/ide.php/18cd11e5a4004bc5cbc9768a8ee991d5" width="900" height="300" frameborder="0"></iframe>
+    <p>Its code, which appears on the left, is just a set of phrase structure rules that generate all of the program’s traces.</p>
+
+    <p>Even if traditional programming languages do not look that way, the difference is arguably superficial. It is possible to program in phrase structure rules; it is a different question whether it is equally easy in all situations. We will come back to that.</p>
+
+    <p>The shortest trace that our program could generate is this one:</p>
+
+    <p id="trace"></p>
+    <script>
+     var tree = new TreeDrawer(
+         document.getElementById('trace'),
+         {label:"program", extended: true, children: [
+             {label:"ask how the user feels", children: [
+                {label:"write How are you feeling?"},
+                {label:"space"},
+                {label:"read"},
+                {label:"continue conversation", children: [
+                    {label:"selection equals interested?"},
+                    {label:"yes"},
+                    {label:"unselect"},
+                    {label:"to next line"},
+                    {label:"write Oh, perfect! We hope it only gets better!"},
+                ]},
+             ]},
+         ]}
+     );
+     tree.draw();
+     for (const node of document.querySelectorAll('#trace *')) {
+         if (node.innerHTML === 'yes') {
+             node.style.fill = '#7A6';
+         }
+     }
+    </script>
+
+    <p>A longer trace could be generated as well, if the word “interested” were entered only at the second attempt:</p>
+
+
+    <p id="recursion"></p>
+    <script>
+     var tree = new TreeDrawer(
+         document.getElementById('recursion'),
+         {label:"program", extended: true, children: [
+             {label:"ask how the user feels", children: [
+                {label:"(H)"},
+                {label:"space"},
+                {label:"read"},
+                {label:"continue conversation", children: [
+                    {label:"selection equals interested?"},
+                    {label:"no"},
+                    {label:"unselect"},
+                    {label:"to next line"},
+                    {label:"(D)"},
+                    {label:"to next line"},
+                    {label:"ask how the user feels", children: [
+                       {label:"(H)"},
+                       {label:"space"},
+                       {label:"read"},
+                       {label:"continue conversation", children: [
+                           {label:"selection equals interested?"},
+                           {label:"yes"},
+                           {label:"unselect"},
+                           {label:"to next line"},
+                           {label:"(O)"},
+                       ]},
+                    ]},
+                ]},
+             ]},
+         ]}
+     );
+     tree.draw();
+     for (const node of document.querySelectorAll('#recursion *')) {
+         if (node.innerHTML === 'yes') {
+             node.style.fill = '#7A6';
+         }
+         if (node.innerHTML === 'no') {
+             node.style.fill = '#A67';
+         }
+     }
+    </script>
+
+
+    <p>To save space, we abbreviated the three <em>write</em> commands as (H), (D) and (O) by the first letter of the text they output:</p>
+
+    <ul>
+        <li>(H) = <em>write How are you feeling?</em></li>
+        <li>(D) = <em>write Did you perhaps mean “interested”?</em></li>
+        <li>(O) = <em>write Oh, perfect! We hope it only gets better!</em></li>
+    </ul>
+
+    <p>Meet <strong>recursion</strong>. We define <em>ask how the user feels</em> to include <em>continue conversation</em>, but also provide an option for <em>continue conversation</em> to include <em>ask how the user feels</em>. As a result, the commands that <em>ask how the user feels</em> expands to will potentially include <em>ask how the user feels</em> itself! This way, we obtain a cyclic process.</p>
+
+
+    <p>We can make the trace as lengthy as we wish:</p>
+
+
+    <p id="large-recursion"></p>
+    <script>
+     var tree = new TreeDrawer(
+         document.getElementById('large-recursion'),
+         {label:"program", extended: true, children: [
+             {label:"ask how the user feels", children: [
+                {label:"(H)"},
+                {label:"space"},
+                {label:"read"},
+                {label:"continue conversation", children: [
+                    {label:"selection equals interested?"},
+                    {label:"no"},
+                    {label:"unselect"},
+                    {label:"to next line"},
+                    {label:"(D)"},
+                    {label:"to next line"},
+                    {label:"ask how the user feels", children: [
+                       {label:"(H)"},
+                       {label:"space"},
+                       {label:"read"},
+                       {label:"continue conversation", children: [
+                           {label:"selection equals interested?"},
+                           {label:"no"},
+                            {label:"unselect"},
+                            {label:"to next line"},
+                            {label:"(D)"},
+                            {label:"to next line"},
+                            {label:"ask how the user feels", children: [
+                                {label:"(H)"},
+                                {label:"space"},
+                                {label:"read"},
+                                {label:"continue conversation", children: [
+                                    {label:"selection equals interested?"},
+                                    {label:"yes"},
+                                    {label:"unselect"},
+                                    {label:"to next line"},
+                                    {label:"(O)"},
+                                ]},
+                            ]},
+                       ]},
+                    ]},
+                ]},
+             ]},
+         ]}
+     );
+     tree.draw();
+     for (const node of document.querySelectorAll('#large-recursion *')) {
+         if (node.innerHTML === 'yes') {
+             node.style.fill = '#7A6';
+         }
+         if (node.innerHTML === 'no') {
+             node.style.fill = '#A67';
+         }
+     }
+    </script>
+
+
+
+    <h2>Programming languages</h2>
+    
+    <p class="dash">&mdash;</p>
+
+    <p>What we applied here was an illustrative programming language, but a rather peculiar one, too. Let us now see how programs look in languages that are more common!</p>
+
+    <p>We will use Python for comparison (on the right). The comparison is schematic; the letters A&ndash;F represent arbitrary commands:</p>
+
+    <table class="the-table">
+        <tr>
+            <td>program &rarr; A + B + C</td>
+            <td><pre>A()<br>B()<br>C()<br></pre></td>
+        </tr>
+        <tr>
+            <td>program &rarr; A + D</td>
+            <td><pre>A()<br>D()<br></pre></td>
+        </tr>
+        <tr>
+            <td>program &rarr; A + D<br>A &rarr; B + C</td>
+            <td><pre><strong>def</strong> A():<br>  B()<br>  C()<br><br>A()<br>D()<br></pre></td>
+        </tr>
+        <tr>
+            <td>program &rarr; A + D<br>A &rarr; B + C<br>D &rarr; E + F</td>
+            <td><pre><strong>def</strong> A():<br>  B()<br>  C()<br><br><strong>def</strong> D():<br>  E()<br>  F()<br><br>A()<br>D()<br></pre></td>
+        </tr>
+    </table>
+
+    <p>Let us direct our attention to some details in these short Python snippets.</p>
+
+    <ul>
+        <li>The <code>def</code><em> keyword.</em> It signals that whatever follows is a definition of a command (or <em>function</em> in Python parlance). You can verify for yourself that almost<span style="color: #989;  text-shadow: 0 0 3px #989;">*</span> every <code>def</code> keyword on the right has a corresponding rule on the left.</li>
+        
+        <li><em>Spaces.</em> The content of a definition resides in a <em>block</em>. We separate it from the outside by pushing it rightwards using spaces or tabs. A different number of spaces can place a line inside different blocks!</li>
+        <li><em>Colons.</em> They are obligatory before starting a block. It is interesting that there is nothing obligatory for <em>ending</em> blocks! The blank lines that we have inserted in the examples are, in fact, optional.</li>
+    </ul>
+
+    <p><span style="color: #989; text-shadow: 0 0 3px #989;">*</span> The definition of the program itself has no <code>def</code> keyword. Neither is it placed inside a block. It is, however, important to place it at the very end: up to that place, all other functions must be already defined, or they will be inaccessible.</p>
+
+    <p>Also, for the ones who are interested:</p>
+    <ul>
+        <li><em>Parentheses.</em> In Python, commands (i.e., functions) can have <em>arguments</em>. This is, partly, the same concept of argument as the one we use in linguistics. In fact, commands/functions are often named using verbs!<br>
+        Recall the command <em>write <span class="nonterminal">something</span></em>. The encircled part (<em class="nonterminal">something</em>) is the argument&nbsp;&ndash; both in a linguistic and in a programming sense. In the language that we employed in this article, we would have said <code>write Hello world</code>, and in Pythom, we will say <code>print("Hello world")</code>.<br>
+        Therefore, the parentheses are here to contain the arguments of a function. To slightly simplify the actual state of affairs, even in the absence of arguments, the parentheses are still required for consistency.</li>
+    </ul>
+
+
+    <h2>The &ldquo;if&rdquo; construction</h2>
+    <p class="dash">&mdash;</p>
+
+    <p>Wherever we had two possible paths of execution with <em class="yes">yes</em> and <em class="no">no</em>, we will now use the <code>if</code> keyword in Python, possibly accompanied by <code>else</code>. Both of these keywords also take blocks:</p>
+
+    <table class="the-table">
+        <tr>
+            <td>program &rarr; A<br>A &rarr; Q? + <span class="yes">yes</span> + B<br>A &rarr; Q? + <span class="no">no</span></td>
+            <td><pre><strong>def</strong> A():<br>  <strong>if</strong> Q():<br>    B()<br><br>A()</pre></td>
+        </tr>
+        <tr>
+            <td>program &rarr; A<br>A &rarr; Q? + <span class="yes">yes</span> + B<br>A &rarr; Q? + <span class="no">no</span> + C</td>
+            <td><pre><strong>def</strong> A():<br>  <strong>if</strong> Q():<br>    B()<br>  <strong>else</strong>:<br>    C()<br><br>A()</pre></td>
+        </tr>
+        <tr>
+            <td>program &rarr; A<br>A &rarr; Q? +  <span class="yes">yes</span> + B + A<br>A &rarr; Q? + <span class="no">no</span> + C</td>
+            <td><pre><strong>def</strong> A():<br>  <strong>if</strong> Q():<br>    B()<br>    A()<br>  <strong>else</strong>:<br>    C()<br><br>A()</pre></td>
+        </tr>
+        <!-- <tr>
+            <td><pre><strong>def</strong> A():<br>  <strong>while</strong> Q():<br>    B()<br>  C()<br><br>A()</pre></td>
+        </tr> -->
+   </table>
+
+
+   <p>There is also logical negation: the <code>not</code> keyword. To understand how it works, compare the top row with the bottom one:</p>
+
+   <table class="the-table">
+       <tr>
+           <td>program &rarr; Q? + <span class="yes">yes</span> + A<br>program &rarr; Q? + <span class="no">no</span> + B</td>
+           <td><pre><strong>if</strong> Q():<br>  A()<br><strong>else</strong>:<br>  B()</td>
+       </tr>
+       <tr>
+           <td>program &rarr; Q? + <span class="no">no</span> + A<br>program &rarr; Q? + <span class="yes">yes</span> + B</td>
+           <td><pre><strong>if not</strong> Q():<br>  A()<br><strong>else</strong>:<br>  B()</td>
+       </tr>
+  </table>
+
+
+   <h2>Tail recursion and the &ldquo;while&rdquo; construction</h2>
+    <p class="dash">&mdash;</p>
+
+
+    <p>Let us have a closer look at one program that we saw before. Below, the definition of A contains the command A itself; therefore, here too we are dealing with recursion. There exists a special <code>while</code> block for this type of recursion. In fact, the two variants of the program listed below are identically behaved:</p>
+
+    <table class="the-table">
+        <tr>
+            <td rowspan="2">program &rarr; A<br>A &rarr; Q? +  <span class="yes">yes</span> + B + A<br>A &rarr; Q? + <span class="no">no</span> + C</td>
+            <td><pre><strong>def</strong> A():<br>  <strong>if</strong> Q():<br>    B()<br>    A()<br>  <strong>else</strong>:<br>    C()<br><br>A()</pre></td>
+        </tr>
+        <tr>
+            <td><pre><strong>def</strong> A():<br>  <strong>while</strong> Q():<br>    B()<br>  C()<br><br>A()</pre></td>
+        </tr>
+   </table>
+
+   <p>The type of recursion that can be notated using <code>while</code>, is called <strong>tail</strong> recursion. It is the kind of recursion where a command enters its own definition as the very last constituent, as in A &rarr; Q? +  <span class="yes">yes</span> + B + A. (Notice in which places A recurs!)</p>
+
+     <h2>Summary</h2>
+
+   <p class="dash">&mdash;</p>
+
+<!--    
+  <p>yes pat yra loginiai jungtukai <code>and</code> or <code>or</code>. Su jais galima trumpai užrašyti programs, kuriose tenka užduoti po kelis susijusius klausimus &ndash; įvykdyti kelias klausiamąsias komandas:</p>
+
+  <table class="the-table">
+      <tr>
+          <td>program &rarr; Q? + <span class="yes">yes</span> + A<br>program &rarr; Q? + <span class="no">no</span></td>
+          <td><pre><strong>if</strong> Q():<br>  A()</td>
+      </tr>
+      <tr>
+          <td>program &rarr; P? + <span class="yes">yes</span> + Q? + <span class="yes">yes</span> + A<br>program &rarr; P? + <span class="yes">yes</span> + Q? + <span class="no">no</span><br>program &rarr; P? + <span class="no">no</span></td>
+          <td><pre><strong>if</strong> P() <strong>and</strong> Q():<br>  A()</td>
+      </tr>
+      <tr>
+          <td>program &rarr; P? + <span class="yes">yes</span> + A<br>program &rarr; P? + <span class="no">no</span> + Q? + <span class="yes">yes</span> + A<br>program &rarr; P? + <span class="no">no</span></td>
+          <td><pre><strong>if</strong> P() <strong>or</strong> Q():<br>  A()</td>
+      </tr>
+ </table>
+
+ <p class="dash">&mdash;</p> -->
+
+
+     <p>Let us recap now:</p>
+         
+     
+    <ul>
+        <li>we introduced execution traces,</li>
+        <li>on them, we applied a familiar instrument of syntactic analysis,</li>
+        <li>we composed phrase structure rules that generate various execution traces,</li>
+        <li>then, we identified these sets of rules with programs,</li>
+        <li>and lastly, we saw that Python programs have a piecewise correspondence with these sets of rules.</li>
+    </ul>
+
+     <p>Thank you for your interest!</p>
+
+    <h2>Addendum</h2>
+    <p class="dash">&mdash;</p>
+
+    <p>If you are interested in how phrase structure rules turn into Python programs, please type some rules and click the <em>Translate to Python</em> button:</p>
+
+    <iframe src="https://katego.lt/metaphor-en/ide.php/ff347fd67064016d6b82247dd956737b" width="900" height="300" frameborder="0"></iframe>
+
+    <p>Here is an exhaustive list of the commands that our text editor recognizes:</p>
+
+    <ul>
+        <li>write <span class="nonterminal">something</span>,</li>
+        <li>space,</li>
+        <li>read,</li>
+        <li>forward,<br>back,</li>
+        <li>to next line,<br> to previous line,</li>
+        <li>to beginning of line,<br> to end of line,</li>
+        <li>to beginning, <br>to end,</li>
+        <li>select,<br>select all,<br>unselect,</li>
+        <li>cut, <br>copy, <br>paste,</li>
+        <li>delete.</li>
+    </ul>
+    <p>Question commands:</p>
+    <ul>
+        <li>at beginning of line?,<br>at end of line?,</li>
+        <li>at beginning?,<br>at end?,</li>
+        <li>selection equals <span class="nonterminal">something</span>?,</li>
+        <li>selection consists of <span class="nonterminal">N</span> characters?,</li>
+        <li>selection contains <span class="nonterminal">something</span>?,</li>
+        <li>selection begins with <span class="nonterminal">something</span>?,</li>
+        <li>selection ends with <span class="nonterminal">something</span>?,</li>
+        <li>selection equals clipboard?</li>
+    </ul>
+
+    <p class="asterisk">*</p>
+
+    <p style="text-align: center;">&copy; Ignas Rudaitis 2019, 2021</p>
+</body>
+</html>
